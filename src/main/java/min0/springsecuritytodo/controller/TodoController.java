@@ -6,10 +6,7 @@ import min0.springsecuritytodo.entity.TodoEntity;
 import min0.springsecuritytodo.service.TodoService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,4 +73,24 @@ public class TodoController {
         }
     }
 
+    @GetMapping
+    public ResponseEntity<?> retrieveTodoList(){
+        String temporaryUserId = "temp-user"; // 임시 유저
+
+        // (1) 서비스 계층의 retrieve() 사용해서 투두 리스트 가져오기
+        List<TodoEntity> entities = service.retrieve(temporaryUserId);
+
+        //(2) 리턴된 엔티티 리스트를 TodoDTO 배열로 변환
+        List<TodoDTO> dtos = new ArrayList<>();
+        for(TodoEntity tEntity:entities){
+            TodoDTO tDto = new TodoDTO(tEntity); //dto로 바꾼다음
+            dtos.add(tDto); //dto 배열에 추가
+        }
+
+        // (3) 변환된 TodoDTO 리스트를 이용해서 ResponseDTO를 초기화
+        ResponseDTO<TodoDTO> res = ResponseDTO.<TodoDTO>builder().data(dtos).build();
+
+        // (4) ResponseDTO를 리턴
+        return ResponseEntity.ok().body(res);
+    }
 }

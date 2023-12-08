@@ -31,6 +31,11 @@ public class TodoService {
         return repository.findByUserId(entity.getUserId());
 
     }
+    // read todo
+    public List<TodoEntity> retrieve(final String userId) {
+        return repository.findByUserId(userId);
+    }
+
     // entity 유효성 검사 메소드
     // - create, update, delete 할 때 사용되므로 메소드로 처리
     private void validate(final TodoEntity entity){
