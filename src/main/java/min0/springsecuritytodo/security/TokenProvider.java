@@ -4,7 +4,9 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import lombok.extern.slf4j.Slf4j;
+import min0.springsecuritytodo.config.jwt.JwtProperties;
 import min0.springsecuritytodo.entity.UserEntity;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -17,8 +19,11 @@ public class TokenProvider {
     // 토큰을 생성
     //  일단 하드 코딩해서 돌아가는거 보기
     // JWT 토큰 생성을 위한 비밀키 (하드 코딩)
-    private static final String SECRET_KEY = "hong-min-yeong-971106";
+//    private static final String SECRET_KEY = "hong-min-yeong-971106";
 
+    // [after] JwtProperties 클래스를 이용해 설정파일 (application.properties) 값 꺼내오기
+    @Autowired
+    private JwtProperties jwtProperties;
     // create(): JWT 생성
     public String create(UserEntity userEntity){
         Date expiryDate = Date.from(Instant.now().plus(1,ChronoUnit.DAYS)); // 지금으로 부터 1일
@@ -27,10 +32,10 @@ public class TokenProvider {
         // JWT 토큰 구성 -> header, payload ,signature
         return Jwts.builder()
                 //header에 들어갈 내용 및 서명을 하기 위한 SECRET_KEY
-                .signWith(SignatureAlgorithm.HS512,SECRET_KEY)
+                .signWith(SignatureAlgorithm.HS512, jwtProperties.getSecret_key())
                 // payload에 들어갈 내용
                 .setSubject(String.valueOf(userEntity.getId())) // 토큰 제목
-                .setIssuer("spring-security-todo") // iss: 토큰 발급자
+                .setIssuer(jwtProperties.getIssuer()) // iss: 토큰 발급자
                 .setIssuedAt(new Date()) // iat: 토큰이 발급된 시간
                 .setExpiration(expiryDate) // exp: 토큰 만료 시간
                 .compact(); // 토큰 생성
@@ -45,7 +50,7 @@ public class TokenProvider {
         // - 토큰이 위조되지 않았다고 판별되면, 페이로드 (claims) 리턴, 토큰이 위조되었다면? 예외 날림
         // -  그 중 우리는 토큰 유효성 검사후 유저 아이디를 반환하고자 하니 getBody를 부름
           Claims claims = Jwts.parser()
-                  .setSigningKey(SECRET_KEY)
+                  .setSigningKey(jwtProperties.getSecret_key())
                   .parseClaimsJws(token)
                   .getBody();
 
