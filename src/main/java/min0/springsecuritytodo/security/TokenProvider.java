@@ -49,7 +49,7 @@ public class TokenProvider {
                   .parseClaimsJws(token)
                   .getBody();
 
-        return claims.getSubject();
+        return claims.getSubject(); // 유저 아이디 반환
     }
 
 }
