@@ -41,7 +41,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
             // token 검사
             // - 토큰 인증 부분 구현
             // - 유효시간 검사 생략
-            if(token != null & !token.equalsIgnoreCase("null")){
+            if(token != null && !token.equalsIgnoreCase("null")){
                 // 토큰이 null, "null"이 아니라면 토큰 검사 진행
 
                 //userId 가져오기
